@@ -6,12 +6,21 @@
 using namespace std;
 namespace plt = matplotlibcpp;
 
-// Defining Map Characteristics
+/* 
+Defining Map Characteristics
+*/
+
+// Sensor characteristic: Min and Max ranges of the beams
 double Zmax = 5000, Zmin = 170;
+// Defining free cells(lfree), occupied cells(locc), unknown cells(l0) log odds values
 double l0 = 0, locc = 0.4, lfree = -0.4;
+// Grid dimensions
 double gridWidth = 100, gridHeight = 100;
+// Map dimensions
 double mapWidth = 30000, mapHeight = 15000;
+// Robot size with respect to the map // Map area in coordinates - values to be tranlated to this range
 double robotXOffset = mapWidth / 5, robotYOffset = mapHeight / 3;
+// Defining an l vector to store the log odds values of each cell
 vector<vector<double> > l(mapWidth / gridWidth, vector<double>(mapHeight / gridHeight));
 
 double inverseSensorModel(double x, double y, double theta, double xi, double yi, double sensorData[])
@@ -79,11 +88,31 @@ void occupancyGridMapping(double Robotx, double Roboty, double Robottheta, doubl
 void visualization()
 {
     //TODO: Initialize a plot named Map of size 300x150
-    
+    plt::title("Final map");
+    plt::xlim(0, 300 );
+    plt::ylim(0, 150 );
+    int i = 300*150;
     //TODO: Loop over the log odds values of the cells and plot each cell state. 
     //Unkown state: green color, occupied state: black color, and free state: red color 
+    for (int x=0; x< mapWidth/gridWidth; x++) {
+        for(int y=0; y<mapHeight/gridHeight; y++) {
+            cout<< "Remaining cells to process:"<<i<<endl;
+            i--;
+            if(l[x][y]==0){
+                plt::plot({x},{y},"g.");
+            }
+            else if(l[x][y]>0){
+                plt::plot({x},{y},"k.");
+            }
+            else {
+                plt::plot({x},{y},"r.");
+            }
+        }
+    }
     
     //TODO: Save the image and close the plot 
+    plt::save("./Images/final_map.png");
+    plt::clf();
 }
 
 int main()
